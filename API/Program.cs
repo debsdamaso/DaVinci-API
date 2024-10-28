@@ -39,8 +39,11 @@ builder.Services.AddSingleton<IMongoClient>(client);
 // Registre o ProductService
 builder.Services.AddScoped<ProductService>();
 
-// Registre o repositório, se você tiver um
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<ICostumerRepository, CostumerRepository>();
+
+
 
 // Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();
