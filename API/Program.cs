@@ -4,46 +4,40 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
-using API.Repositories; 
-using DaVinci.Services; 
+using API.Repositories;
+using API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Adiciona serviços ao contêiner.
 builder.Services.AddControllers();
 
 // Configuração do MongoDB
 var mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDB");
 var mongoClientSettings = MongoClientSettings.FromConnectionString(mongoDbConnectionString);
-
-// Set the ServerApi field of the settings object to set the version of the Stable API on the client
 mongoClientSettings.ServerApi = new ServerApi(ServerApiVersion.V1);
-
-// Criação do cliente MongoDB
 var client = new MongoClient(mongoClientSettings);
 
-// Send a ping to confirm a successful connection
+// Testa a conexão com o MongoDB
 try
 {
     var result = client.GetDatabase("admin").RunCommand<BsonDocument>(new BsonDocument("ping", 1));
-    Console.WriteLine("Pinged your deployment. You successfully connected to MongoDB!");
+    Console.WriteLine("Conexão bem-sucedida ao MongoDB!");
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"Failed to connect to MongoDB: {ex.Message}");
+    Console.WriteLine($"Falha na conexão ao MongoDB: {ex.Message}");
 }
 
-// Adiciona o cliente MongoDB ao contêiner de serviços
 builder.Services.AddSingleton<IMongoClient>(client);
 
-// Registre o ProductService
+// Adiciona serviços e repositórios
 builder.Services.AddScoped<ProductService>();
-
+builder.Services.AddScoped<CostumerService>();
+builder.Services.AddScoped<FeedbackService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<ICostumerRepository, CostumerRepository>();
-
-
 
 // Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -54,7 +48,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configuração do pipeline de requisições HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

@@ -5,30 +5,23 @@ namespace DaVinci.Models
 {
     public class Feedback
     {
-        [BsonId]
+        [BsonId] // Identificador único do documento
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        [BsonElement("customerId")]
+        [BsonElement("customerId")] // ID do cliente
         public string CustomerId { get; set; }
 
-        [BsonElement("productId")]
+        [BsonElement("productId")] // ID do produto
         public string ProductId { get; set; }
 
-        [BsonElement("comment")]
+        [BsonElement("comment")] // Comentário do feedback
         public string Comment { get; set; }
 
-        [BsonElement("sentiment")]
-        public string Sentiment { get; set; }
+        [BsonElement("sentiment")] // Sentimento previsto
+        public string Sentiment { get; set; } // "Positive" ou "Negative"
 
-        // Construtor para garantir que as propriedades sejam inicializadas
-        public Feedback(string id, string customerId, string productId, string comment, string sentiment)
-        {
-            Id = id;
-            CustomerId = customerId;
-            ProductId = productId;
-            Comment = comment;
-            Sentiment = sentiment;
-        }
+        [BsonElement("sentimentScore")] // Pontuação da previsão
+        public float SentimentScore { get; set; }
     }
 }

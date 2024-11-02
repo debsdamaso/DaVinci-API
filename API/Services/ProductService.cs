@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using API.Repositories;
 using DaVinci.Models;
 
-namespace DaVinci.Services
+namespace API.Services
 {
     public class ProductService
     {
