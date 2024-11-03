@@ -3,7 +3,6 @@ using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Controllers;
-using API.Services;
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
 using API.Repositories;
@@ -30,47 +29,39 @@ namespace API.Tests.Controllers
                 new Costumer("1", "John Doe", "john.doe@example.com"),
                 new Costumer("2", "Jane Smith", "jane.smith@example.com")
             };
-            _mockCostumerRepository.Setup(repo => repo.GetAllAsync())
-                                   .ReturnsAsync(costumers);
+            _mockCostumerRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(costumers);
 
             // Act
             var result = await _controller.GetAll();
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<IEnumerable<Costumer>>>(result);
-            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-            var returnCostumers = Assert.IsType<List<Costumer>>(okResult.Value);
-
-            Assert.Equal(2, returnCostumers.Count);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnValue = Assert.IsAssignableFrom<IEnumerable<Costumer>>(okResult.Value);
+            Assert.Equal(costumers.Count, returnValue.Count());
         }
 
         [Fact]
-        public async Task GetById_ExistingId_ShouldReturnCostumer()
+        public async Task GetById_ShouldReturnCostumer_WhenCostumerExists()
         {
             // Arrange
-            var costumerId = "1";
-            var costumer = new Costumer(costumerId, "John Doe", "john.doe@example.com");
-            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumerId))
-                                   .ReturnsAsync(costumer);
+            var costumer = new Costumer("1", "John Doe", "john.doe@example.com");
+            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumer.Id)).ReturnsAsync(costumer);
 
             // Act
-            var result = await _controller.GetById(costumerId);
+            var result = await _controller.GetById(costumer.Id);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<Costumer>>(result);
-            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-            var returnCostumer = Assert.IsType<Costumer>(okResult.Value);
-
-            Assert.Equal(costumerId, returnCostumer.Id);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnValue = Assert.IsType<Costumer>(okResult.Value);
+            Assert.Equal(costumer.Id, returnValue.Id);
         }
 
         [Fact]
-        public async Task GetById_NonExistingId_ShouldReturnNotFound()
+        public async Task GetById_ShouldReturnNotFound_WhenCostumerDoesNotExist()
         {
             // Arrange
-            var costumerId = "999";
-            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumerId))
-                                   .ReturnsAsync((Costumer)null);
+            var costumerId = "99";
+            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumerId)).ReturnsAsync((Costumer)null);
 
             // Act
             var result = await _controller.GetById(costumerId);
@@ -80,66 +71,58 @@ namespace API.Tests.Controllers
         }
 
         [Fact]
-        public async Task Create_ValidCostumer_ShouldReturnCreatedAtAction()
+        public async Task CreateCostumer_ShouldReturnCreatedAtAction()
         {
             // Arrange
-            var newCostumer = new Costumer("3", "Sarah Connor", "sarah.connor@example.com");
-            _mockCostumerRepository.Setup(repo => repo.CreateAsync(newCostumer))
-                                   .Returns(Task.CompletedTask);
+            var newCostumer = new Costumer("3", "Alice Johnson", "alice.johnson@example.com");
+            _mockCostumerRepository.Setup(repo => repo.CreateAsync(It.IsAny<Costumer>())).Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.Create(newCostumer);
 
             // Assert
             var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
-            var returnCostumer = Assert.IsType<Costumer>(createdAtActionResult.Value);
-
-            Assert.Equal(newCostumer.Id, returnCostumer.Id);
+            var returnValue = Assert.IsType<Costumer>(createdAtActionResult.Value);
+            Assert.Equal(newCostumer.Id, returnValue.Id);
         }
 
         [Fact]
-        public async Task Update_ExistingCostumer_ShouldReturnNoContent()
+        public async Task UpdateCostumer_ShouldReturnNoContent()
         {
             // Arrange
-            var costumerId = "1";
-            var costumer = new Costumer(costumerId, "Updated Costumer", "updated@example.com");
-            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumerId))
-                                   .ReturnsAsync(costumer);
-            _mockCostumerRepository.Setup(repo => repo.UpdateAsync(costumerId, costumer))
-                                   .Returns(Task.CompletedTask);
+            var existingCostumer = new Costumer("1", "John Doe", "john.doe@example.com");
+            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(existingCostumer.Id)).ReturnsAsync(existingCostumer);
+            _mockCostumerRepository.Setup(repo => repo.UpdateAsync(existingCostumer.Id, existingCostumer)).Returns(Task.CompletedTask);
 
             // Act
-            var result = await _controller.Update(costumerId, costumer);
+            var result = await _controller.Update(existingCostumer.Id, existingCostumer);
 
             // Assert
             Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
-        public async Task Update_NonExistingCostumer_ShouldReturnNotFound()
+        public async Task UpdateCostumer_ShouldReturnNotFound_WhenCostumerDoesNotExist()
         {
             // Arrange
-            var costumerId = "999";
-            var costumer = new Costumer(costumerId, "Updated Costumer", "updated@example.com");
-            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumerId))
-                                   .ReturnsAsync((Costumer)null);
+            var nonExistentCostumer = new Costumer("99", "Non Existent", "non.existent@example.com");
+            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(nonExistentCostumer.Id)).ReturnsAsync((Costumer)null);
 
             // Act
-            var result = await _controller.Update(costumerId, costumer);
+            var result = await _controller.Update(nonExistentCostumer.Id, nonExistentCostumer);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public async Task Delete_ExistingId_ShouldReturnNoContent()
+        public async Task DeleteCostumer_ShouldReturnNoContent()
         {
             // Arrange
             var costumerId = "1";
-            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumerId))
-                                   .ReturnsAsync(new Costumer(costumerId, "John Doe", "john.doe@example.com"));
-            _mockCostumerRepository.Setup(repo => repo.DeleteAsync(costumerId))
-                                   .Returns(Task.CompletedTask);
+            var existingCostumer = new Costumer(costumerId, "John Doe", "john.doe@example.com");
+            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumerId)).ReturnsAsync(existingCostumer);
+            _mockCostumerRepository.Setup(repo => repo.DeleteAsync(costumerId)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.Delete(costumerId);
@@ -149,12 +132,11 @@ namespace API.Tests.Controllers
         }
 
         [Fact]
-        public async Task Delete_NonExistingId_ShouldReturnNotFound()
+        public async Task DeleteCostumer_ShouldReturnNotFound_WhenCostumerDoesNotExist()
         {
             // Arrange
-            var costumerId = "999";
-            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumerId))
-                                   .ReturnsAsync((Costumer)null);
+            var costumerId = "99";
+            _mockCostumerRepository.Setup(repo => repo.GetByIdAsync(costumerId)).ReturnsAsync((Costumer)null);
 
             // Act
             var result = await _controller.Delete(costumerId);
