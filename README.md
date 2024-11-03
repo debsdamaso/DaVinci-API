@@ -75,7 +75,7 @@ A API possui endpoints CRUD para gerenciar:
 
 - --------------------------------------------------
 
-## Rodando a Aplicação (ALTERAR)
+## Rodando a Aplicação
 
 Passos:
 1. Clonar o repositório:
