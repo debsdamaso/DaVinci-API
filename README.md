@@ -57,7 +57,7 @@ Para treinar o modelo com máxima acurácia possível (100), foi utilizado o dat
 
 O dataset contém comentários de consumidores e labels (1 para feedback positivo e 0 para negativo). Foi treinado na pasta da solução myMLApp.
 
-Caso queira, você pode realizar uma previsão aleatória no terminal. No Visual Studio, após clonar o repositório, vá em myMLApp e procure pelo arquivo program.cs. Logo em seguida, substitua com a frase entre parênteses com a frase de seu interesse. Você verá uma linha assim: Col0 = "material de baixa qualidade parece barato". 
+Caso queira, você pode realizar uma previsão aleatória no terminal. No Visual Studio, após clonar o repositório, vá em myMLApp e procure pelo arquivo program.cs. Logo em seguida, substitua a frase entre aspas "" com a frase de seu interesse. Você verá uma linha assim: Col0 = "material de baixa qualidade parece barato". 
 
 Após isso, clique no myMLApp e selecione a opção > depurar > iniciar sem depurar ou iniciar nova instância e você verá o resultado (positivo ou negativo) no terminal.
 
