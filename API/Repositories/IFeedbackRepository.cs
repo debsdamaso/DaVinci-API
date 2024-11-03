@@ -1,6 +1,6 @@
-﻿using DaVinci.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using API.Models;
 
 namespace API.Repositories
 {
@@ -8,7 +8,7 @@ namespace API.Repositories
     {
         Task<IEnumerable<Feedback>> GetAllAsync();
         Task<Feedback> GetByIdAsync(string id);
-        Task CreateAsync(Feedback feedback);
+        Task CreateFeedbackAsync(Feedback feedback);  // Alterado o nome do método para criar feedbacks
         Task UpdateAsync(string id, Feedback feedback);
         Task DeleteAsync(string id);
     }

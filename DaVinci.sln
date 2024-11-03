@@ -5,9 +5,9 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{B5146494-E1EF-4358-8C0F-89C325A05B75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "myMLApp", "myMLApp\myMLApp.csproj", "{F0BE6E41-A7AB-4D27-9153-8372EDDC24D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "myMLApp", "myMLApp\myMLApp.csproj", "{F0BE6E41-A7AB-4D27-9153-8372EDDC24D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Tests", "API.Tests\API.Tests.csproj", "{69D51BD2-32D6-4BE7-AC8C-78B86B5FB755}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API.Tests", "API.Tests\API.Tests.csproj", "{69D51BD2-32D6-4BE7-AC8C-78B86B5FB755}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -29,7 +29,15 @@ catch (Exception ex)
     Console.WriteLine($"Falha na conexão ao MongoDB: {ex.Message}");
 }
 
+// Registro do cliente MongoDB
 builder.Services.AddSingleton<IMongoClient>(client);
+
+// Registro do banco de dados
+builder.Services.AddSingleton<IMongoDatabase>(provider =>
+{
+    var mongoClient = provider.GetRequiredService<IMongoClient>();
+    return mongoClient.GetDatabase("DaVinciDB"); // Substitua pelo nome do seu banco de dados
+});
 
 // Adiciona serviços e repositórios
 builder.Services.AddScoped<ProductService>();
@@ -38,6 +46,9 @@ builder.Services.AddScoped<FeedbackService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<ICostumerRepository, CostumerRepository>();
+builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>(); // Registrar o IPurchaseRepository
+builder.Services.AddScoped<FeedbackReminderService>();
+builder.Services.AddScoped<IEmailService, EmailService>(); // A implementação do IEmailService já estava correta
 
 // Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();

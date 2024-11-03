@@ -1,5 +1,5 @@
 ﻿using MongoDB.Driver;
-using DaVinci.Models;
+using API.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,7 +11,7 @@ namespace API.Repositories
 
         public FeedbackRepository(IMongoClient client)
         {
-            var database = client.GetDatabase("DaVinciDB"); // Nome do banco
+            var database = client.GetDatabase("DaVinciDB");
             _feedbacks = database.GetCollection<Feedback>("Feedbacks");
         }
 
@@ -25,19 +25,19 @@ namespace API.Repositories
             return await _feedbacks.Find(feedback => feedback.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task CreateAsync(Feedback feedback)
+        public async Task CreateFeedbackAsync(Feedback feedback)
         {
             await _feedbacks.InsertOneAsync(feedback);
         }
 
         public async Task UpdateAsync(string id, Feedback feedback)
         {
-            await _feedbacks.ReplaceOneAsync(feedback => feedback.Id == id, feedback);
+            await _feedbacks.ReplaceOneAsync(f => f.Id == id, feedback);
         }
 
         public async Task DeleteAsync(string id)
         {
-            await _feedbacks.DeleteOneAsync(feedback => feedback.Id == id);
+            await _feedbacks.DeleteOneAsync(f => f.Id == id);
         }
     }
 }

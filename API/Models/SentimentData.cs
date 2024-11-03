@@ -1,6 +1,6 @@
 ﻿using Microsoft.ML.Data;
 
-namespace DaVinci.Models
+namespace API.Models
 {
     public class SentimentData
     {
@@ -8,6 +8,6 @@ namespace DaVinci.Models
         public string? Comment { get; set; }
 
         [LoadColumn(1)]
-        public float Score { get; set; } 
+        public float Score { get; set; }
     }
 }

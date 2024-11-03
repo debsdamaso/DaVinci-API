@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace DaVinci.Models
+namespace API.Models
 {
     public class Costumer
     {

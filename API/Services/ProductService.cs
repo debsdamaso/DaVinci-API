@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Repositories;
-using DaVinci.Models;
+using API.Models;
 
 namespace API.Services
 {

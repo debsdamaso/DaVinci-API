@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using API.Controllers;
-using DaVinci.Models;
+using API.Models;
 using API.Repositories;
 
 namespace API.Tests.Controllers
@@ -89,7 +89,6 @@ namespace API.Tests.Controllers
                 SentimentScore = 0.95f
             };
 
-            _mockRepository.Setup(repo => repo.CreateAsync(feedback)).Returns(Task.CompletedTask);
             _mockRepository.Setup(repo => repo.GetByIdAsync(feedback.Id)).ReturnsAsync(feedback); // Simulating retrieval for CreatedAtAction
 
             // Act

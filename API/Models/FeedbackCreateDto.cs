@@ -1,17 +1,17 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace DaVinci.Models
+namespace API.Models
 {
     public class FeedbackCreateDto
     {
         [BsonElement("customerId")]
-        public string CustomerId { get; set; }
+        public string? CustomerId { get; set; }
 
         [BsonElement("productId")]
-        public string ProductId { get; set; }
+        public string? ProductId { get; set; }
 
         [BsonElement("comment")]
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
     }
 }

@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.ML.OnnxTransformer" Version="3.0.1" />
     <PackageReference Include="Microsoft.ML.TorchSharp" Version="0.21.1" />
     <PackageReference Include="MongoDB.Driver" Version="3.0.0" />
+    <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="TorchSharp-cpu" Version="0.101.5" />
   </ItemGroup>

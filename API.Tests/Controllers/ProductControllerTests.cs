@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Controllers;
 using API.Services;
-using DaVinci.Models;
+using API.Models;
 using Microsoft.AspNetCore.Mvc;
 using API.Repositories;
 

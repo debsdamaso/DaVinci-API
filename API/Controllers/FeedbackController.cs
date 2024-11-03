@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using DaVinci.Models;
+using API.Models;
 using API.Repositories;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -39,10 +39,10 @@ namespace API.Controllers
 
         // POST: api/feedback
         [HttpPost]
-        public async Task<ActionResult<Feedback>> CreateFeedback(Feedback feedback)
+        public async Task<IActionResult> CreateFeedback(Feedback feedback)
         {
-            await _feedbackRepository.CreateAsync(feedback);
-            return CreatedAtAction(nameof(GetFeedbackById), new { id = feedback.Id }, feedback);
+            await _feedbackRepository.CreateFeedbackAsync(feedback); // Certifique-se de usar o nome correto do método
+            return Ok(new { message = "Feedback criado com sucesso." });
         }
 
         // PUT: api/feedback/{id}

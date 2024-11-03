@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DaVinci.Models;
+using API.Models;
 using API.Services;
 
 namespace API.Controllers
