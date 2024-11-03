@@ -34,24 +34,24 @@ namespace API.Repositories
             await _purchases.ReplaceOneAsync(p => p.Id == purchase.Id, purchase);
         }
 
+        public async Task<List<Purchase>> GetPurchasesWithoutFeedbackAsync()
+        {
+            return await _purchases.Find(p => p.FeedbackId == null).ToListAsync();
+        }
+
         public async Task DeletePurchaseAsync(string id)
         {
             await _purchases.DeleteOneAsync(p => p.Id == id);
         }
 
-        // Método para associar um feedback a uma compra
         public async Task AssociateFeedbackToPurchaseAsync(string purchaseId, string feedbackId)
         {
-            var update = Builders<Purchase>.Update
-                .Set(p => p.FeedbackId, feedbackId)
-                .Set(p => p.FeedbackDeixado, true);
-            await _purchases.UpdateOneAsync(p => p.Id == purchaseId, update);
-        }
-
-        // Método para buscar compras sem feedback deixado
-        public async Task<List<Purchase>> GetPurchasesWithoutFeedbackAsync()
-        {
-            return await _purchases.Find(p => !p.FeedbackDeixado).ToListAsync();
+            var purchase = await GetPurchaseByIdAsync(purchaseId);
+            if (purchase != null)
+            {
+                purchase.FeedbackId = feedbackId;
+                await UpdatePurchaseAsync(purchase);
+            }
         }
     }
 }

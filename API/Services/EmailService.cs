@@ -1,43 +1,59 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
 namespace API.Services
 {
-    public class EmailService : IEmailService // Implemente a interface
+    public class EmailService : IEmailService
     {
         private readonly string _sendGridApiKey;
         private readonly string _senderEmail;
         private readonly string _senderName;
+        private readonly ILogger<EmailService> _logger;
 
-        public EmailService(IConfiguration configuration)
+        public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
         {
             // Recupera a chave API e o e-mail do remetente do appsettings.json
             _sendGridApiKey = configuration["SendGrid:ApiKey"];
             _senderEmail = configuration["SendGrid:SenderEmail"];
             _senderName = configuration["SendGrid:SenderName"];
+            _logger = logger;
         }
 
         /// <summary>
         /// Método genérico para enviar um e-mail com assunto e conteúdo especificados.
         /// </summary>
-        public async Task<bool> SendEmailAsync(string recipientEmail, string subject, string content) // Atualize o tipo de retorno
+        public async Task<bool> SendEmailAsync(string recipientEmail, string subject, string content)
         {
-            var client = new SendGridClient(_sendGridApiKey);
-            var from = new EmailAddress(_senderEmail, _senderName);
-            var to = new EmailAddress(recipientEmail);
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, content, content);
-
-            var response = await client.SendEmailAsync(msg);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            try
             {
-                // Log de erro ou tratamento de erro adicional, caso necessário
-                Console.WriteLine("Erro ao enviar e-mail: " + response.StatusCode);
-                return false; // Retorna false em caso de erro
+                var client = new SendGridClient(_sendGridApiKey);
+                var from = new EmailAddress(_senderEmail, _senderName);
+                var to = new EmailAddress(recipientEmail);
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, content, content);
+
+                var response = await client.SendEmailAsync(msg);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.Accepted)
+                {
+                    _logger.LogInformation($"E-mail enviado para {recipientEmail} com sucesso.");
+                    return true;
+                }
+                else
+                {
+                    var responseBody = await response.Body.ReadAsStringAsync();
+                    _logger.LogError($"Erro ao enviar e-mail: StatusCode={response.StatusCode}, Body={responseBody}");
+                    return false;
+                }
             }
-            return true; // Retorna true em caso de sucesso
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro ao enviar e-mail: {ex.Message}");
+                return false;
+            }
         }
 
         /// <summary>

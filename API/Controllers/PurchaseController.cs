@@ -11,11 +11,11 @@ namespace API.Controllers
     [ApiController]
     public class PurchaseController : ControllerBase
     {
-        private readonly PurchaseRepository _purchaseRepository;
+        private readonly IPurchaseRepository _purchaseRepository;
         private readonly FeedbackReminderService _feedbackReminderService;
-        private readonly FeedbackRepository _feedbackRepository; // Adicionado para criar feedbacks
+        private readonly IFeedbackRepository _feedbackRepository;
 
-        public PurchaseController(PurchaseRepository purchaseRepository, FeedbackReminderService feedbackReminderService, FeedbackRepository feedbackRepository)
+        public PurchaseController(IPurchaseRepository purchaseRepository, FeedbackReminderService feedbackReminderService, IFeedbackRepository feedbackRepository)
         {
             _purchaseRepository = purchaseRepository;
             _feedbackReminderService = feedbackReminderService;
@@ -36,14 +36,15 @@ namespace API.Controllers
         {
             var purchase = await _purchaseRepository.GetPurchaseByIdAsync(id);
             if (purchase == null)
+            {
                 return NotFound();
-
+            }
             return Ok(purchase);
         }
 
         // POST: api/purchase
         [HttpPost]
-        public async Task<ActionResult<Purchase>> CreatePurchase(Purchase purchase)
+        public async Task<ActionResult> CreatePurchase(Purchase purchase)
         {
             await _purchaseRepository.AddPurchaseAsync(purchase);
             return CreatedAtAction(nameof(GetPurchaseById), new { id = purchase.Id }, purchase);
@@ -51,59 +52,31 @@ namespace API.Controllers
 
         // PUT: api/purchase/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePurchase(string id, Purchase purchase)
+        public async Task<ActionResult> UpdatePurchase(string id, Purchase updatedPurchase)
         {
-            var existingPurchase = await _purchaseRepository.GetPurchaseByIdAsync(id);
-            if (existingPurchase == null)
+            var purchase = await _purchaseRepository.GetPurchaseByIdAsync(id);
+            if (purchase == null)
+            {
                 return NotFound();
+            }
 
-            purchase.Id = id;
-            await _purchaseRepository.UpdatePurchaseAsync(purchase);
+            updatedPurchase.Id = id;
+            await _purchaseRepository.UpdatePurchaseAsync(updatedPurchase);
             return NoContent();
         }
 
         // DELETE: api/purchase/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePurchase(string id)
+        public async Task<ActionResult> DeletePurchase(string id)
         {
             var purchase = await _purchaseRepository.GetPurchaseByIdAsync(id);
             if (purchase == null)
+            {
                 return NotFound();
+            }
 
             await _purchaseRepository.DeletePurchaseAsync(id);
             return NoContent();
         }
-
-        // POST: api/purchase/send-feedback-reminders
-        [HttpPost("send-feedback-reminders")]
-        public async Task<IActionResult> SendFeedbackReminders()
-        {
-            await _feedbackReminderService.SendFeedbackRemindersAsync();
-            return Ok(new { message = "Lembretes de feedback enviados com sucesso." });
-        }
-
-        // POST: api/purchase/{id}/add-feedback
-        [HttpPost("{purchaseId}/add-feedback")]
-        public async Task<IActionResult> AddFeedbackToPurchase(string purchaseId, Feedback feedback)
-        {
-            var purchase = await _purchaseRepository.GetPurchaseByIdAsync(purchaseId);
-            if (purchase == null)
-                return NotFound();
-
-            // Se CreateFeedbackAsync não retorna um ID, remova a atribuição a feedbackId
-            await _feedbackRepository.CreateFeedbackAsync(feedback);
-            // Assumindo que CreateFeedbackAsync apenas cria o feedback e não retorna um ID
-            await _purchaseRepository.AssociateFeedbackToPurchaseAsync(purchaseId, feedback.Id); // Use feedback.Id se ele já contiver o ID
-            return Ok(new { message = "Feedback associado à compra com sucesso." });
-        }
-
-        // GET: api/purchase/pending-feedback
-        [HttpGet("pending-feedback")]
-        public async Task<ActionResult<List<Purchase>>> GetPurchasesPendingFeedback()
-        {
-            var purchases = await _purchaseRepository.GetPurchasesWithoutFeedbackAsync();
-            return Ok(purchases);
-        }
     }
 }
-
